@@ -33,7 +33,7 @@ export class LambdaStack extends cdk.Stack {
     // Definir la función Lambda
     const lambdaFunction = new lambda.Function(this, 'LambdaFunction', {
       functionName: props.lambdaConfig.functionName,
-      runtime: lambda.Runtime.of(props.lambdaConfig.runtime),
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: props.lambdaConfig.handler,
       code: lambda.Code.fromAsset(path.join(__dirname, '../../')),
       memorySize: props.lambdaConfig.memorySize,
