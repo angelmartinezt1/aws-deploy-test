@@ -47,7 +47,7 @@ jobs:
           echo "env_name: ${{ steps.env.outputs.env_name }}"
           echo "account_id: ${{ steps.env.outputs.account_id }}"
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials 
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::${{ steps.env.outputs.account_id }}:role/GithubActionsRole
