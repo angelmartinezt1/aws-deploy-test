@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Express 5.0 API on AWS Lambda
+
+Globals:
+  Function:
+    Timeout: 5
+    MemorySize: 128
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        NODE_ENV: aws
+        ALLOWED_ORIGINS: '*'
+
+Resources:
+  # Definir API Gateway explícitamente
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Dev
+      
+  ExpressApi:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: express-api
+      Handler: src/index.handler
+      CodeUri: ./
+      Architectures:
+        - x86_64
+      Events:
+        ApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /
+            Method: ANY
+        ApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/"
+  
+  ApiFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt ExpressApi.Arn
