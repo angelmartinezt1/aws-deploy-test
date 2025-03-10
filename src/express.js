@@ -3,6 +3,7 @@ import { corsMiddleware } from './middlewares/corsMiddleware.js'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
 import notFoundMiddleware from './middlewares/notFoundMiddleware.js'
 import requestTimerMiddleware from './middlewares/requestTimerMiddleware.js'
+import { formatResponse } from './utils/formatResponse.js'
 
 const app = express()
 
@@ -11,6 +12,11 @@ app.disable('x-powered-by')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(corsMiddleware)
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  formatResponse(res, 200, true, { status: 'OK' }, 'Service is healthy')
+})
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
