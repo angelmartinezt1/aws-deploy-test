@@ -1,0 +1,69 @@
+# .github/workflows/deploy.yml
+name: Deploy Lambda to AWS
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd cdk && npm ci
+
+      - name: Determine environment and account
+        id: env
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "env_name=prod" >> $GITHUB_OUTPUT
+            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_OUTPUT
+          else
+            echo "env_name=dev" >> $GITHUB_OUTPUT
+            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ steps.env.outputs.account_id }}:role/GithubActionsRole
+          aws-region: us-east-1
+          role-session-name: GithubActionsSession
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy with CDK
+        run: |
+          cd cdk
+          npm run cdk deploy -- --context env=${{ steps.env.outputs.env_name }} --require-approval never
+
+      - name: Update Lambda Alias
+        if: ${{ steps.env.outputs.env_name == 'prod' }}
+        run: |
+          VERSION=$(aws lambda publish-version \
+            --function-name aws-deploy-test-prod \
+            --description "Deployed from GitHub Actions" \
+            --query 'Version' --output text)
+          
+          aws lambda update-alias \
+            --function-name aws-deploy-test-prod \
+            --name prod \
+            --function-version $VERSION

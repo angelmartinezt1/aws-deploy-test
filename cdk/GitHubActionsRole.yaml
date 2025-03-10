@@ -1,0 +1,57 @@
+# GithubActionsRole.yaml - Rol para ser importado en cada cuenta AWS
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM role for GitHub Actions to deploy Lambda functions'
+
+Parameters:
+  GitHubOrg:
+    Type: String
+    Default: angelmartinezt1
+    Description: GitHub organization or user name
+
+  RepositoryName:
+    Type: String
+    Default: aws-deploy-test
+    Description: GitHub repository name
+
+Resources:
+  GithubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GithubActionsRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com'
+            Action: 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com'
+              StringLike:
+                'token.actions.githubusercontent.com:sub': !Sub 'repo:${GitHubOrg}/${RepositoryName}:*'
+
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator'
+
+      Policies:
+        - PolicyName: CDKDeploy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:*'
+                  - 'lambda:*'
+                  - 'iam:PassRole'
+                  - 'iam:CreateRole'
+                  - 'iam:AttachRolePolicy'
+                  - 'iam:PutRolePolicy'
+                  - 'logs:*'
+                Resource: '*'
+
+Outputs:
+  RoleARN:
+    Description: ARN of the GitHub Actions Role
+    Value: !GetAtt GithubActionsRole.Arn
