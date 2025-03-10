@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file=.env --watch src/index.js",
-    "sam": "sam build && sam deploy"
+    "sam": "sam build && sam deploy",
+    "build": "echo 'No build step needed'"
   },
   "keywords": [],
   "author": "Juan Angel Martínez López",
