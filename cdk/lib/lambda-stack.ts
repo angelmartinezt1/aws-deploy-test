@@ -35,7 +35,9 @@ export class LambdaStack extends cdk.Stack {
       functionName: props.lambdaConfig.functionName,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: props.lambdaConfig.handler,
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../'), {
+        exclude: ['cdk', 'cdk.out', 'node_modules', '.git', '.github', 'test']
+      }),
       memorySize: props.lambdaConfig.memorySize,
       timeout: cdk.Duration.seconds(props.lambdaConfig.timeout),
       environment: props.lambdaConfig.environment,
