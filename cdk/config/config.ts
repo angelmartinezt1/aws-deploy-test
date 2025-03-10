@@ -2,7 +2,7 @@
 export const config = {
   dev: {
     projectName: 'aws-deploy-test-dev',
-    accountId: '123456789012', // Reemplazar con tu ID de cuenta de desarrollo
+    // El accountId se obtendrá desde variables de entorno
     region: 'us-east-1',
     lambda: {
       functionName: 'aws-deploy-test-dev',
@@ -21,7 +21,7 @@ export const config = {
   },
   prod: {
     projectName: 'aws-deploy-test-prod',
-    accountId: '987654321098', // Reemplazar con tu ID de cuenta de producción
+    // El accountId se obtendrá desde variables de entorno
     region: 'us-east-1',
     lambda: {
       functionName: 'aws-deploy-test-prod',

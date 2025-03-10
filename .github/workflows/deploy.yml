@@ -41,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::${{ steps.env.outputs.account_id }}:role/GithubActionsRole
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
           role-session-name: GithubActionsSession
 
       - name: Run tests
@@ -51,9 +51,14 @@ jobs:
         run: npm run build
 
       - name: Deploy with CDK
+        env:
+          AWS_ACCOUNT_ID: ${{ steps.env.outputs.account_id }}
+          AWS_ACCOUNT_ID_DEV: ${{ secrets.AWS_ACCOUNT_ID_DEV }}
+          AWS_ACCOUNT_ID_PROD: ${{ secrets.AWS_ACCOUNT_ID_PROD }}
+          AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
         run: |
           cd cdk
-          npm run cdk deploy -- --context env=${{ steps.env.outputs.env_name }} --require-approval never
+          npm run cdk deploy -- --context env=${{ steps.env.outputs.env_name }} --context accountId=${{ steps.env.outputs.account_id }} --require-approval never
 
       - name: Update Lambda Alias
         if: ${{ steps.env.outputs.env_name == 'prod' }}
