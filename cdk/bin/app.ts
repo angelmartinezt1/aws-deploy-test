@@ -8,7 +8,7 @@ import { config, EnvConfig } from '../config/config';
 const app = new cdk.App();
 
 // Determinar el entorno según los parámetros o variables de entorno
-const envName = app.node.tryGetContext('env') || process.env.CDK_ENV || 'dev';
+const envName = (app.node.tryGetContext('env') || process.env.CDK_ENV || 'dev') as 'dev' | 'prod';
 
 if (envName !== 'dev' && envName !== 'prod') {
   throw new Error(`Entorno inválido: ${envName}`);
