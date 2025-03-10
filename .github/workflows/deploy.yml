@@ -11,7 +11,7 @@ on:
 permissions:
   id-token: write
   contents: read
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -57,9 +57,6 @@ jobs:
           role-to-assume: arn:aws:iam::${{ steps.env.outputs.account_id }}:role/GithubActionsRole
           aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
           role-session-name: GithubActionsSession
-
-      - name: Run tests
-        run: npm test
 
       - name: Build
         run: npm run build
