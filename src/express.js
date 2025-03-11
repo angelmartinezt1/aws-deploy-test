@@ -18,6 +18,11 @@ app.get('/api/health', (req, res) => {
   formatResponse(res, 200, true, { status: 'OK' }, 'Service is healthy')
 })
 
+// Health check endpoint
+app.get('/github', (req, res) => {
+  formatResponse(res, 200, true, { status: 'OK' }, 'Testing from github')
+})
+
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 
