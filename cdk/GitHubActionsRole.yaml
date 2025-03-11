@@ -50,6 +50,16 @@ Resources:
                   - 'iam:PutRolePolicy'
                   - 'logs:*'
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'ssm:GetParameter'
+                  - 'ssm:GetParameters'
+                  - 'ssm:GetParameterHistory'
+                  - 'ssm:DescribeParameters'
+                  - 'ssm:PutParameter'
+                  - 'ssm:DeleteParameter'
+                  - 'ssm:DeleteParameters'
+                Resource: 'arn:aws:ssm:*:*:parameter/*'
 
 Outputs:
   RoleARN:
