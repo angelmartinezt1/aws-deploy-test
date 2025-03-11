@@ -25,7 +25,7 @@ export const config: Record<'dev' | 'prod', EnvConfig> = {
     region: 'us-east-1',
     lambda: {
       functionName: 'aws-deploy-test-dev',
-      handler: 'app.lambda_handler',
+      handler: 'src/index.handler',
       runtime: 'nodejs20.x',
       memorySize: 256,
       timeout: 30,
@@ -38,7 +38,7 @@ export const config: Record<'dev' | 'prod', EnvConfig> = {
     region: 'us-east-1',
     lambda: {
       functionName: 'aws-deploy-test-prod',
-      handler: 'app.lambda_handler',
+      handler: 'src/index.handler',
       runtime: 'nodejs20.x',
       memorySize: 512,
       timeout: 30,
