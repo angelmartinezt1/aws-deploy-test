@@ -8,7 +8,7 @@ if (NODE_ENV === 'development') {
     console.log(`Health check: http://localhost:${EXPRESS_PORT}/api/health`)
   })
 } else {
-  console.log('AWS Lambda Handler')
+  console.log('AWS Lambda Handlers')
 }
 
 export const handler = serverless(app)
